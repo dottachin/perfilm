@@ -26,8 +26,9 @@ data/sample/*
 .DS_Store
 Thumbs.db
 
-# Claude Code (réglages locaux)
-.claude/settings.local.json
 
 # Rapport de PFE (gardé en local)
 docs/*.pdf
+
+# Claude Code (agents / skills locaux)
+.claude/

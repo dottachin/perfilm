@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="96" viewBox="0 0 440 96" role="img" aria-label="PerFilm">
+  <rect x="0" y="0" width="96" height="96" rx="22" fill="#0f172a"/>
+  <g fill="#f8fafc">
+    <rect x="16" y="12" width="8" height="6" rx="1.5"/><rect x="32" y="12" width="8" height="6" rx="1.5"/><rect x="48" y="12" width="8" height="6" rx="1.5"/><rect x="64" y="12" width="8" height="6" rx="1.5"/>
+    <rect x="16" y="78" width="8" height="6" rx="1.5"/><rect x="32" y="78" width="8" height="6" rx="1.5"/><rect x="48" y="78" width="8" height="6" rx="1.5"/><rect x="64" y="78" width="8" height="6" rx="1.5"/>
+  </g>
+  <rect x="20" y="52" width="13" height="18" rx="2.5" fill="#f59e0b" opacity="0.55"/>
+  <rect x="41" y="40" width="13" height="30" rx="2.5" fill="#f59e0b" opacity="0.8"/>
+  <rect x="62" y="27" width="13" height="43" rx="2.5" fill="#f59e0b"/>
+  <text x="120" y="56" font-family="'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="46" font-weight="700" letter-spacing="-1" fill="#0f172a">Per<tspan fill="#f59e0b">Film</tspan></text>
+  <text x="122" y="80" font-family="'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif" font-size="15" font-weight="500" letter-spacing="2.5" fill="#475569">MOVIE PERFORMANCE ANALYTICS</text>
+</svg>

@@ -21,7 +21,7 @@ Pipeline: Python ETL (pandas) → PostgreSQL star schema → Mondrian ROLAP cube
 - Never hard-code credentials. Use the `PERFILM_DATABASE_URL` and `PERFILM_DATA_DIR` env vars.
 - Raw data (`data/raw/`) is large, licensed and git-ignored. Tests use `perfilm.sample_data` only.
 
-## Project agents and skills
+## Project agents and skills (local only, `.claude/` is git-ignored)
 
 - `.claude/agents/etl-engineer.md`: data cleaning, regex parsing, merge and dimension work.
 - `.claude/agents/olap-designer.md`: Mondrian schema, MDX, Knowage reports.

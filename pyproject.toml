@@ -3,6 +3,7 @@ name = "perfilm"
 version = "1.0.0"
 description = "Système décisionnel d'analyse des performances des films — ETL Python → PostgreSQL (schéma en étoile) → cube ROLAP Mondrian / Knowage"
 readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.10"
 authors = [
     { name = "Issam Echchadli" },
