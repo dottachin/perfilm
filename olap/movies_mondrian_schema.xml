@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PerFilm — schéma Mondrian du cube ROLAP (figure 34 du rapport)
+  À importer dans Knowage : Catalogs > Mondrian schemas catalog,
+  puis créer un document OLAP basé sur le template olap/Template.xml.
+
+  Les mesures budget / revenue sont pondérées par fact_movies.poids :
+  un film multi-genres (ou multi-pays, multi-studios…) occupe plusieurs lignes
+  de la table de faits ; la pondération répartit son budget entre ces lignes
+  et garantit que le total « All » correspond à la somme réelle des films.
+-->
+<Schema name="movies_mondrian_schema">
+  <Cube name="movies_cube" visible="true" cache="true" enabled="true">
+    <Table name="fact_movies" schema="public" alias=""/>
+
+    <Dimension type="StandardDimension" visible="true" foreignKey="id_genre" name="genre">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_genre">
+        <Table name="genre" schema="public" alias=""/>
+        <Level name="genre" visible="true" column="genre" type="String" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <Dimension type="StandardDimension" visible="true" foreignKey="id_realisateur" name="realisateur">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_realisateur">
+        <Table name="realisateur" schema="public" alias=""/>
+        <Level name="realisateur" visible="true" column="realisateur" type="String" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <Dimension type="StandardDimension" visible="true" foreignKey="id_studio" name="studio">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_studio">
+        <Table name="studio" schema="public" alias=""/>
+        <Level name="studio" visible="true" column="studio" type="String" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <Dimension type="StandardDimension" visible="true" foreignKey="id_pays" name="pays">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_pays">
+        <Table name="pays" schema="public" alias=""/>
+        <Level name="pays" visible="true" column="pays" type="String" uniqueMembers="false"/>
+      </Hierarchy>
+    </Dimension>
+
+    <Dimension type="StandardDimension" visible="true" foreignKey="id_langue" name="langue">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_langue">
+        <Table name="langue" schema="public" alias=""/>
+        <Level name="langue" visible="true" column="langue" nameColumn="langue_complete"
+               type="String" uniqueMembers="true"/>
+      </Hierarchy>
+    </Dimension>
+
+    <Dimension type="StandardDimension" visible="true" foreignKey="id_movie" name="movie">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_movie">
+        <Table name="movie" schema="public" alias=""/>
+        <Level name="titre" visible="true" column="id_movie" nameColumn="titre"
+               type="String" uniqueMembers="true">
+          <Property name="titre_original" column="titre_original" type="String"/>
+          <Property name="duree" column="duree" type="Numeric"/>
+          <Property name="rating" column="rating" type="Numeric"/>
+        </Level>
+      </Hierarchy>
+    </Dimension>
+
+    <Dimension type="TimeDimension" visible="true" foreignKey="id_date" name="date">
+      <Hierarchy visible="true" hasAll="true" primaryKey="id_date">
+        <Table name="date" schema="public" alias=""/>
+        <Level name="annee" visible="true" column="annee" type="Integer"
+               uniqueMembers="true" levelType="TimeYears"/>
+        <Level name="trimestre" visible="true" column="trimestre" nameColumn="libelle_trimestre"
+               type="Integer" uniqueMembers="false" levelType="TimeQuarters"/>
+        <Level name="mois" visible="true" column="mois" nameColumn="libelle_mois"
+               ordinalColumn="mois" type="Integer" uniqueMembers="false" levelType="TimeMonths"/>
+        <Level name="jour" visible="true" column="jour" type="Integer"
+               uniqueMembers="false" levelType="TimeDays"/>
+      </Hierarchy>
+      <Hierarchy name="jour_semaine" visible="true" hasAll="true" primaryKey="id_date">
+        <Table name="date" schema="public" alias=""/>
+        <Level name="jour_semaine" visible="true" column="jour_semaine"
+               nameColumn="libelle_jour_semaine" ordinalColumn="jour_semaine"
+               type="Integer" uniqueMembers="true" levelType="TimeDays"/>
+      </Hierarchy>
+    </Dimension>
+
+    <Measure name="revenue" aggregator="sum" formatString="#,###" visible="true">
+      <MeasureExpression>
+        <SQL dialect="generic">"fact_movies"."revenue" * "fact_movies"."poids"</SQL>
+      </MeasureExpression>
+    </Measure>
+    <Measure name="budget" aggregator="sum" formatString="#,###" visible="true">
+      <MeasureExpression>
+        <SQL dialect="generic">"fact_movies"."budget" * "fact_movies"."poids"</SQL>
+      </MeasureExpression>
+    </Measure>
+    <Measure name="nb_films" column="id_movie" aggregator="distinct-count"
+             formatString="#,###" visible="true"/>
+
+    <CalculatedMember name="ratio_revenu_budget" dimension="Measures" visible="true"
+                      formula="IIf([Measures].[budget] = 0, NULL, [Measures].[revenue] / [Measures].[budget])">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="#,##0.00"/>
+    </CalculatedMember>
+    <CalculatedMember name="marge" dimension="Measures" visible="true"
+                      formula="[Measures].[revenue] - [Measures].[budget]">
+      <CalculatedMemberProperty name="FORMAT_STRING" value="#,###"/>
+    </CalculatedMember>
+  </Cube>
+</Schema>

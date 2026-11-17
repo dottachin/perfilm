@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Environnement / secrets
+.env
+
+# Données (volumineuses / sous licence) — voir data/README.md
+data/raw/*
+data/sample/*
+!data/raw/.gitkeep
+*.db
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Claude Code (réglages locaux)
+.claude/settings.local.json
+
+# Rapport de PFE (gardé en local)
+docs/*.pdf

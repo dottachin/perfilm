@@ -1,0 +1,19 @@
+-- Requêtes MDX d'exemple sur [movies_cube] (rapports des figures 38 à 40)
+
+-- Figure 38 : genres des films britanniques, budget et revenu, 2007-2017
+SELECT {[Measures].[budget], [Measures].[revenue]} ON COLUMNS,
+       NON EMPTY [genre].[genre].Members ON ROWS
+FROM [movies_cube]
+WHERE ([pays].[UK], {[date].[2007] : [date].[2017]});
+
+-- Figure 39 : ratio revenu/budget par genre et par année, États-Unis
+SELECT NON EMPTY {[date].[2007] : [date].[2017]} ON COLUMNS,
+       NON EMPTY [genre].[genre].Members ON ROWS
+FROM [movies_cube]
+WHERE ([Measures].[ratio_revenu_budget], [pays].[USA]);
+
+-- Figure 40 : genres les plus rentables, tous pays, 2007-2017
+SELECT {[Measures].[marge], [Measures].[ratio_revenu_budget], [Measures].[nb_films]} ON COLUMNS,
+       Order(NON EMPTY [genre].[genre].Members, [Measures].[marge], BDESC) ON ROWS
+FROM [movies_cube]
+WHERE {[date].[2007] : [date].[2017]};

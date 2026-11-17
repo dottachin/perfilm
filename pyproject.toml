@@ -1,0 +1,43 @@
+[project]
+name = "perfilm"
+version = "1.0.0"
+description = "Système décisionnel d'analyse des performances des films — ETL Python → PostgreSQL (schéma en étoile) → cube ROLAP Mondrian / Knowage"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Issam Echchadli" },
+]
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "SQLAlchemy>=2.0",
+    "psycopg2-binary>=2.9",
+    "pyxlsb>=1.0.10",
+    "openpyxl>=3.1",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+explore = ["matplotlib>=3.7", "jupyterlab>=4.0"]
+dev = ["pytest>=8.0", "ruff>=0.5"]
+
+[project.scripts]
+perfilm = "perfilm.pipeline:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/perfilm"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]

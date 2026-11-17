@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: movies
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d movies"
+          --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: ruff check . && ruff format --check .
+      - run: pytest
+      - name: End-to-end load into PostgreSQL + reports
+        env:
+          PGPASSWORD: ci
+        run: |
+          python -m perfilm.sample_data data/sample
+          perfilm --data-dir data/sample \
+            --database-url postgresql+psycopg2://postgres:ci@localhost:5432/movies
+          psql -h localhost -U postgres -d movies -v ON_ERROR_STOP=1 -f sql/reports.sql
+      - name: Validate OLAP XML
+        run: python -c "import xml.dom.minidom as m; m.parse('olap/movies_mondrian_schema.xml'); m.parse('olap/Template.xml')"

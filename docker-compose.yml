@@ -1,0 +1,70 @@
+# PerFilm — environnement local
+#
+#   docker compose up -d warehouse               # entrepôt PostgreSQL seul (pour l'ETL)
+#   docker compose --profile bi up -d            # + Knowage (OLAP / reporting) sur :8080
+#   docker compose --profile admin up -d pgadmin # + pgAdmin sur :5050
+#
+# Les secrets viennent de .env (voir .env.example).
+# Le service Knowage reprend la configuration de l'image officielle
+# knowagelabs/knowage-server-docker ; adapter le tag / les variables si besoin.
+
+services:
+  warehouse:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: movies
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?définir POSTGRES_PASSWORD dans .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - warehouse-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d movies"]
+      interval: 5s
+      retries: 10
+
+  knowage-db:
+    profiles: ["bi"]
+    image: mariadb:10.6
+    environment:
+      MARIADB_DATABASE: knowage
+      MARIADB_USER: knowage
+      MARIADB_PASSWORD: ${KNOWAGE_DB_PASSWORD:-knowage}
+      MARIADB_ROOT_PASSWORD: ${KNOWAGE_DB_ROOT_PASSWORD:-knowage-root}
+    volumes:
+      - knowage-db-data:/var/lib/mysql
+
+  knowage:
+    profiles: ["bi"]
+    image: knowagelabs/knowage-server-docker:9.0.12
+    depends_on:
+      - knowage-db
+      - warehouse
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: knowage-db
+      DB_PORT: 3306
+      DB_DB: knowage
+      DB_USER: knowage
+      DB_PASS: ${KNOWAGE_DB_PASSWORD:-knowage}
+      HMAC_KEY: ${KNOWAGE_HMAC_KEY:-change-me-hmac}
+      PASSWORD_ENCRYPTION_SECRET: ${KNOWAGE_PASSWORD_ENCRYPTION_SECRET:-change-me-secret}
+      SENSIBLE_DATA_ENCRYPTION_SECRET: ${KNOWAGE_SENSIBLE_DATA_ENCRYPTION_SECRET:-change-me-sensible}
+      PUBLIC_ADDRESS: localhost
+
+  pgadmin:
+    profiles: ["admin"]
+    image: dpage/pgadmin4:8.12
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@perfilm.local
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    ports:
+      - "5050:80"
+    depends_on:
+      - warehouse
+
+volumes:
+  warehouse-data:
+  knowage-db-data:

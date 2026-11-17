@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Template du document OLAP Knowage (figure 35 du rapport) : revenu et budget par pays -->
+<olap>
+  <cube reference="movies_schema"/>
+  <MDXMondrianQuery>SELECT {[Measures].[revenue], [Measures].[budget]}
+ON COLUMNS, Hierarchize(Union({[pays].[All payss]}, [pays].[All payss].Children))
+ON ROWS FROM [movies_cube]</MDXMondrianQuery>
+  <MDXQUERY>SELECT {[Measures].[revenue], [Measures].[budget]}
+ON COLUMNS, Hierarchize(Union({[pays].[All payss]}, [pays].[All payss].Children))
+ON ROWS FROM [movies_cube]</MDXQUERY>
+  <JSONTEMPLATE>{"olap":{"cube":{"reference":"movies_schema"},"MDXMondrianQuery":{"XML_TAG_TEXT_CONTENT":"SELECT {[Measures].[revenue], [Measures].[budget]} ON COLUMNS, Hierarchize(Union({[pays].[All payss]}, [pays].[All payss].Children)) ON ROWS FROM [movies_cube]"},"MDXQUERY":{"XML_TAG_TEXT_CONTENT":"SELECT {[Measures].[revenue], [Measures].[budget]} ON COLUMNS, Hierarchize(Union({[pays].[All payss]}, [pays].[All payss].Children)) ON ROWS FROM [movies_cube]"},"parameter":[]}}</JSONTEMPLATE>
+  <calculated_fields/>
+</olap>
